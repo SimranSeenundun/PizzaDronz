@@ -1,18 +1,16 @@
 package uk.ac.ed.inf;
 
 public class LngLat {
+    public final double MOVE_LENGTH = 0.00015;
     public double lng, lat;
-    public int north = 90;
-    public int south = 270;
-    public int east = 0;
-    public int west = 180;
 
-    public LngLat(double longitude, double latitude)    {
+
+    public LngLat(double longitude, double latitude) {
         lng = longitude;
         lat = latitude;
     }
 
-    public boolean inCentralArea()  {
+    public boolean inCentralArea() {
         return false;
     }
 
@@ -22,18 +20,27 @@ public class LngLat {
         double y1 = lat;
         double y2 = lnglat.lat;
 
-        return Math.sqrt(Math.pow((x1 - x2),2) + Math.pow((y1 - y2),2));
+        return Math.sqrt(Math.pow((x1 - x2), 2) + Math.pow((y1 - y2), 2));
     }
 
-    public boolean closeTo(LngLat lnglat)  {
-       if ((distanceTo(lnglat) <= 0.00015) && (distanceTo(lnglat) != 0)) {
-           return true;
-       }
-       return false;
+    public boolean closeTo(LngLat lnglat) {
+        if (distanceTo(lnglat) <= 0.00015) {
+            return true;
+        }
+        return false;
     }
 
-    //public double nextPosition(int compDirection) {
-        //compDirection =
-    //}
+    public LngLat nextPosition(double directionAngle) {
+        double newLong = 0;
+        double newLat = 0;
+        if ((directionAngle >= 0 && directionAngle <= 90) || (directionAngle > 180 && directionAngle <= 270)) {
+            newLong += Math.sin(directionAngle) * MOVE_LENGTH;
+            newLat += Math.cos(directionAngle) * MOVE_LENGTH;
+        } else {
+            newLong += Math.cos(directionAngle) * MOVE_LENGTH;
+            newLat += Math.sin(directionAngle) * MOVE_LENGTH;
+        }
+        return new LngLat(newLong, newLat);
+    }
 }
 
