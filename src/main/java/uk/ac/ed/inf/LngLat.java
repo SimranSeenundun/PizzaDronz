@@ -1,14 +1,9 @@
 package uk.ac.ed.inf;
 
-public class LngLat {
-    public final double MOVE_LENGTH = 0.00015;
-    public double lng, lat;
+public record LngLat (double lng, double lat) {
+    private static final double MOVE_LENGTH = 0.00015;
 
 
-    public LngLat(double longitude, double latitude) {
-        lng = longitude;
-        lat = latitude;
-    }
 
     public boolean inCentralArea() {
         return false;
