@@ -1,11 +1,42 @@
 package uk.ac.ed.inf;
 
+import java.lang.annotation.Documented;
+
 public record LngLat (double lng, double lat) {
     private static final double MOVE_LENGTH = 0.00015;
 
-
-
     public boolean inCentralArea() {
+        CentralArea centralArea = CentralArea.getInstance();
+        LngLat[] centralAreaPoints = centralArea.getCentralLngLats();
+        LngLat topLeftCorner = null;
+        LngLat bottomRightCorner = null;
+
+        for (LngLat point: centralAreaPoints) {
+            if (topLeftCorner == null) {
+                topLeftCorner = point;
+                bottomRightCorner = point;
+            }
+
+            if (topLeftCorner.lng > point.lng) {
+                topLeftCorner = new LngLat(point.lng, topLeftCorner.lat());
+            }
+            else if (bottomRightCorner.lng < point.lng) {
+                bottomRightCorner = new LngLat(point.lng, bottomRightCorner.lat());
+            }
+
+            if (topLeftCorner.lat < point.lat) {
+                topLeftCorner = new LngLat(topLeftCorner.lng(), point.lat);
+            }
+            else if (bottomRightCorner.lat > point.lat) {
+                bottomRightCorner = new LngLat(bottomRightCorner.lng(), point.lat);
+            }
+
+
+        }
+
+        if ((lng >= topLeftCorner.lng && lng <= bottomRightCorner.lng) && (lat <= topLeftCorner.lat && lat >= bottomRightCorner.lat)) {
+            return true;
+        }
         return false;
     }
 
