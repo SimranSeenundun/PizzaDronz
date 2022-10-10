@@ -1,15 +1,20 @@
 package uk.ac.ed.inf;
 import org.json.JSONArray;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 
 public class App 
 {
     public static void main( String[] args ) {
-        LngLat lngLatTopLeft = new LngLat(-3.192473, 55.946233);
-        System.out.println(lngLatTopLeft.inCentralArea());
-
-        LngLat lngLatBottomRight = new LngLat(-3.184319,55.942617);
-        System.out.println(lngLatBottomRight.inCentralArea());
+        Restaurant[] restaurants = Restaurant.getRestaurantsFromRestServer("https://ilp-rest.azurewebsites.net/restaurants");
+        ArrayList<String> order = new ArrayList<>();
+        order.add("Pineapple & Ham & Cheese");
+        try{
+            System.out.println(Order.getDeliveryCost(restaurants, order));
+        }
+        catch (InvalidPizzaCombinationException e){
+            System.out.println(e.getMessage());
+        }
     }
 }
