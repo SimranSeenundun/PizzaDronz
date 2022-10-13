@@ -1,7 +1,6 @@
 package uk.ac.ed.inf;
 
 import java.awt.*;
-import java.awt.geom.Line2D;
 import java.util.Arrays;
 
 public record LngLat (double lng, double lat) {
@@ -13,17 +12,25 @@ public record LngLat (double lng, double lat) {
      * @return true if object in centralArea
      */
     public boolean inCentralArea() {
+        //Defines the central area vertices
         CentralArea centralArea = CentralArea.getInstance();
         LngLat[] centralAreaPoints = centralArea.getCentralLngLats();
+
+        //Adds all the LngLat points into one array for decimal removal
         LngLat[] allPoints = Arrays.copyOf(centralAreaPoints, centralAreaPoints.length + 1);
         allPoints[allPoints.length - 1] = this;
-        int[][] intsAllPoints = removeDecimalPoint(allPoints);
+        //Turns current object's and central area points lng lats into integers
+        int[][] intAllPoints = removeDecimalPoint(allPoints);
+
+        //Central area represented as a polygon
         Polygon centralAreaPoly = new Polygon();
 
-        for(int i = 0; i < intsAllPoints.length - 1; i++){
-            centralAreaPoly.addPoint(intsAllPoints[i][0], intsAllPoints[i][1]);
+        //Loops through the central area's int lng and lats and adds it to the polygon
+        for(int i = 0; i < intAllPoints.length - 1; i++){
+            centralAreaPoly.addPoint(intAllPoints[i][0], intAllPoints[i][1]);
         }
-        return centralAreaPoly.contains(intsAllPoints[intsAllPoints.length - 1][0], intsAllPoints[intsAllPoints.length - 1][1]);
+        //Checks if the current object's int lng lat are inside the polygon and returns corresponding boolean
+        return centralAreaPoly.contains(intAllPoints[intAllPoints.length - 1][0], intAllPoints[intAllPoints.length - 1][1]);
     }
 
     /**
@@ -33,12 +40,16 @@ public record LngLat (double lng, double lat) {
      */
     public int[][] removeDecimalPoint(LngLat[] lngLats){
         int mostDecimalPoints = 0;
+
+        //Converts the lngs and lats into a double array
         double[] nums = new double[lngLats.length * 2];
         for (int i = 0, j = 0; i < lngLats.length; i++ , j +=2){
+            //adds lngs before lats
             nums[j] = lngLats[i].lng;
             nums[j + 1] = lngLats[i].lat;
         }
 
+        //Loops through the lngs and lats and finds the one with the most decimal points
         for (double num: nums){
             String sNum = Double.toString(Math.abs(num));
             int decimalAt = sNum.indexOf(".");
@@ -46,8 +57,10 @@ public record LngLat (double lng, double lat) {
             if (decimalPoints > mostDecimalPoints) mostDecimalPoints = decimalPoints;
         }
 
+        //Creates new 2D int array for lng lats and converts each lng and lat pair
         int[][] intNums = new int[lngLats.length][2];
         for (int i = 0, j = 0; i < intNums.length; i++, j += 2){
+            //Multiplies each lng and lat by a factor of 10, depending on the pair that had the highest amount of decimal points
             intNums[i][0] = (int) (nums[j] * Math.pow(10, mostDecimalPoints));
             intNums[i][1] = (int) (nums[j + 1] * Math.pow(10, mostDecimalPoints));
         }
@@ -60,12 +73,9 @@ public record LngLat (double lng, double lat) {
      * @return distance as double.
      */
     public double distanceTo(LngLat lnglat) {
-        double x1 = lng;
-        double x2 = lnglat.lng;
-        double y1 = lat;
-        double y2 = lnglat.lat;
 
-        return Math.sqrt(Math.pow((x1 - x2), 2) + Math.pow((y1 - y2), 2));
+        //Uses pythagoras theorem to find the distance between the two points
+        return Math.sqrt(Math.pow((lng - lnglat.lng), 2) + Math.pow((lat - lnglat.lat), 2));
     }
 
     /**
@@ -74,20 +84,18 @@ public record LngLat (double lng, double lat) {
      * @return true if provided LngLat is close.
      */
     public boolean closeTo(LngLat lnglat) {
-        if (distanceTo(lnglat) <= 0.00015) {
-            return true;
-        }
-        return false;
+        return distanceTo(lnglat) <= 0.00015;
     }
 
     /**
-     * Finds the next LngLat position from the provided angle.
+     * Finds the next LngLat position from the provided angle using trigonometry.
      * @param directionAngle direction the next LngLat should be in.
      * @return LngLat with the next psotion.
      */
     public LngLat nextPosition(double directionAngle) {
         double newLong = 0;
         double newLat = 0;
+        //Checks which way to use sin and cos depending on the angle and uses trig to solve new lng and lat
         if ((directionAngle >= 0 && directionAngle <= 90) || (directionAngle > 180 && directionAngle <= 270)) {
             newLong += Math.sin(directionAngle) * MOVE_LENGTH;
             newLat += Math.cos(directionAngle) * MOVE_LENGTH;

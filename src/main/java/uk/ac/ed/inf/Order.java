@@ -3,9 +3,6 @@ package uk.ac.ed.inf;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 public class Order {
     final static int BASE_DELIVERY_COST = 100;
@@ -21,31 +18,40 @@ public class Order {
        int totalCost = 0;
        String previousRestaurant = "";
 
+       //Loops through each of the pizzas ordered
        for (String pizzaOrdered: pizzasOrdered){
            int i = 0;
            boolean flag = false;
+           //Loops through each restaurant, checking through their menus with current order
            while (i < restaurants.length && !flag){
                Restaurant currentRestaurant = restaurants[i];
                Menu[] menuItems = currentRestaurant.getMenu();
 
+               //Stream that gets a list of matched menu items to the current pizza order
                List<Menu> matchedMenu = Arrays.stream(menuItems).toList().stream()
                        .filter(menu -> menu.getName().equals(pizzaOrdered))
                        .toList();
 
+               //Checks if multiple pizzas have the same name
                if (matchedMenu.size() > 1){
                    throw new InvalidPizzaCombinationException();
-               } else if (matchedMenu.size() == 1) {
+               }
+               //Checks if the menu item has been found for this current restaurant
+               else if (matchedMenu.size() == 1) {
+                   //Checks if orders are from multiple restaurants
                    if ((currentRestaurant.getName().equals(previousRestaurant) || previousRestaurant.equals(""))){
                        totalCost += matchedMenu.get(0).getPrice();
                        previousRestaurant = currentRestaurant.getName();
                        flag = true;
                    }
+                   //Thrown iof invalid combination
                    else {
                        throw new InvalidPizzaCombinationException();
                    }
                }
                i++;
            }
+           //If no order items are not found in any of the restaurants
            if (!flag){
                throw new InvalidPizzaCombinationException();
            }
@@ -54,14 +60,3 @@ public class Order {
        return totalCost + BASE_DELIVERY_COST;
     }
 }
-
-
-//List<Restaurant> restaurantList = Arrays.stream(restaurants).toList();
-
-           /*
-           Map<Object, List<Restaurant>> pizzas = restaurantList.stream()
-                   .collect(Collectors.groupingBy(restaurant -> Arrays.stream(restaurant.getMenu())
-                           .filter(menu -> menu.getName().equals(pizzaOrdered))
-                           .collect(Collectors.toList())));
-
-         */

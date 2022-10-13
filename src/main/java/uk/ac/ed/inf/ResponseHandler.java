@@ -15,8 +15,11 @@ public class ResponseHandler {
      * @return string response from the server.
      */
     public static String getResponse(String url) {
+        //Creates the HTTP client
         HttpClient client = HttpClient.newHttpClient();
+        //Builds a request using provided url
         HttpRequest request = HttpRequest.newBuilder().uri(URI.create(url)).build();
+        //Sends HTTP request using client, receives response and gets body -> converts body to string
         return client.sendAsync(request, HttpResponse.BodyHandlers.ofString()).thenApply(HttpResponse::body)
                 .join();
     }
@@ -28,6 +31,7 @@ public class ResponseHandler {
      */
     public static JSONArray getJSonResponse(String url) {
         String response = getResponse(url);
+        //Converts response to JSONArray
         return new JSONArray(response);
     }
 }

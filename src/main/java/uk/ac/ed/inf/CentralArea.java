@@ -34,9 +34,12 @@ public class CentralArea {
      */
     public LngLat[] getCentralLngLats() {
         LngLat[] centralLngLats = new LngLat[centralArea.length()];
+        //Loops through central area points
         for (int i = 0; i < centralArea.length(); i++) {
+            //Gets the lng and lat from json
             double lng = centralArea.getJSONObject(i).getDouble(LONGITUDE.label);
             double lat = centralArea.getJSONObject(i).getDouble(LATITUDE.label);
+            //Turns the lng and lat int a LngLat object and adds it to the array
             LngLat lngLatPoint = new LngLat(lng , lat);
             centralLngLats[i] = lngLatPoint;
         }

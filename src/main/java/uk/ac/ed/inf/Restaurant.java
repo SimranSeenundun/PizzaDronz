@@ -17,19 +17,23 @@ public class Restaurant {
 
     /**
      * Gets all restaurants from the REST-server.
-     * @param url provided string url of the rest server to collect the JSONs from.
+     * @param url string that points to the rest server to collect the JSONs from.
      * @return array of restaurants.
      */
     public static Restaurant[] getRestaurantsFromRestServer(String url) {
+        //Gets the restaurants JSON from REST-server
         JSONArray restaurantsJson = ResponseHandler.getJSonResponse(url);
         Restaurant[] restaurants = new Restaurant[restaurantsJson.length()];
 
+        //Loops through the json
         for (int i = 0; i < restaurantsJson.length(); i++) {
+            //Gets all the details for the restaurant from the json array using the json's keys
             String resName = restaurantsJson.getJSONObject(i).getString(NAME.label);
             double lng = restaurantsJson.getJSONObject(i).getDouble(LONGITUDE.label);
             double lat = restaurantsJson.getJSONObject(i).getDouble(LATITUDE.label);
             JSONArray menu = restaurantsJson.getJSONObject(i).getJSONArray(MENU.label);
 
+            //Gets all the menu items for the restaurant from the json array and converts into Menu object
             Menu[] menuItems = new Menu[menu.length()];
             for (int j = 0; j < menu.length(); j++){
                 String itemName = menu.getJSONObject(j).getString(NAME.label);
