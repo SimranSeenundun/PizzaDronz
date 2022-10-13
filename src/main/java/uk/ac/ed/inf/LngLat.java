@@ -1,6 +1,8 @@
 package uk.ac.ed.inf;
 
-import java.lang.annotation.Documented;
+import java.awt.*;
+import java.awt.geom.Line2D;
+import java.util.Arrays;
 
 public record LngLat (double lng, double lat) {
     private static final double MOVE_LENGTH = 0.00015;
@@ -8,36 +10,38 @@ public record LngLat (double lng, double lat) {
     public boolean inCentralArea() {
         CentralArea centralArea = CentralArea.getInstance();
         LngLat[] centralAreaPoints = centralArea.getCentralLngLats();
-        LngLat topLeftCorner = null;
-        LngLat bottomRightCorner = null;
+        LngLat[] allPoints = Arrays.copyOf(centralAreaPoints, centralAreaPoints.length + 1);
+        allPoints[allPoints.length - 1] = this;
+        int[][] intsAllPoints = removeDecimalPoint(allPoints);
+        Polygon centralAreaPoly = new Polygon();
 
-        for (LngLat point: centralAreaPoints) {
-            if (topLeftCorner == null) {
-                topLeftCorner = point;
-                bottomRightCorner = point;
-            }
+        for(int i = 0; i < intsAllPoints.length - 1; i++){
+            centralAreaPoly.addPoint(intsAllPoints[i][0], intsAllPoints[i][1]);
+        }
+        return centralAreaPoly.contains(intsAllPoints[intsAllPoints.length - 1][0], intsAllPoints[intsAllPoints.length - 1][1]);
+    }
 
-            if (topLeftCorner.lng > point.lng) {
-                topLeftCorner = new LngLat(point.lng, topLeftCorner.lat());
-            }
-            else if (bottomRightCorner.lng < point.lng) {
-                bottomRightCorner = new LngLat(point.lng, bottomRightCorner.lat());
-            }
-
-            if (topLeftCorner.lat < point.lat) {
-                topLeftCorner = new LngLat(topLeftCorner.lng(), point.lat);
-            }
-            else if (bottomRightCorner.lat > point.lat) {
-                bottomRightCorner = new LngLat(bottomRightCorner.lng(), point.lat);
-            }
-
-
+    public int[][] removeDecimalPoint(LngLat[] lngLats){
+        int mostDecimalPoints = 0;
+        double[] nums = new double[lngLats.length * 2];
+        for (int i = 0, j = 0; i < lngLats.length; i++ , j +=2){
+            nums[j] = lngLats[i].lng;
+            nums[j + 1] = lngLats[i].lat;
         }
 
-        if ((lng >= topLeftCorner.lng && lng <= bottomRightCorner.lng) && (lat <= topLeftCorner.lat && lat >= bottomRightCorner.lat)) {
-            return true;
+        for (double num: nums){
+            String sNum = Double.toString(Math.abs(num));
+            int decimalAt = sNum.indexOf(".");
+            int decimalPoints =  sNum.length() - (decimalAt + 1);
+            if (decimalPoints > mostDecimalPoints) mostDecimalPoints = decimalPoints;
         }
-        return false;
+
+        int[][] intNums = new int[lngLats.length][2];
+        for (int i = 0, j = 0; i < intNums.length; i++, j += 2){
+            intNums[i][0] = (int) (nums[j] * Math.pow(10, mostDecimalPoints));
+            intNums[i][1] = (int) (nums[j + 1] * Math.pow(10, mostDecimalPoints));
+        }
+        return intNums;
     }
 
     public double distanceTo(LngLat lnglat) {

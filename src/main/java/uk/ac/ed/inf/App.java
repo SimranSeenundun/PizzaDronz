@@ -9,11 +9,11 @@ public class App
     public static void main( String[] args ) {
         Restaurant[] restaurants = Restaurant.getRestaurantsFromRestServer("https://ilp-rest.azurewebsites.net/restaurants");
         ArrayList<String> order = new ArrayList<>();
-        order.add("Pineapple & Ham & Cheese");
-        try{
+        order.add("Proper Pizza");
+        order.add("Proper Pizza");
+        try {
             System.out.println(Order.getDeliveryCost(restaurants, order));
-        }
-        catch (InvalidPizzaCombinationException e){
+        } catch (InvalidPizzaCombinationException e) {
             System.out.println(e.getMessage());
         }
     }

@@ -1,6 +1,11 @@
 package uk.ac.ed.inf;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class Order {
     final static int BASE_DELIVERY_COST = 100;
@@ -15,24 +20,22 @@ public class Order {
                Restaurant currentRestaurant = restaurants[i];
                Menu[] menuItems = currentRestaurant.getMenu();
 
-               int j = 0;
-               while (j < menuItems.length && !flag){
-                   Menu currentItem = menuItems[j];
+               List<Menu> matchedMenu = Arrays.stream(menuItems).toList().stream()
+                       .filter(menu -> menu.getName().equals(pizzaOrdered))
+                       .toList();
 
-                   if (currentItem.getName().equals(pizzaOrdered)){
-                       if (currentRestaurant.getName().equals(previousRestaurant) || previousRestaurant.equals("")){
-                           totalCost += currentItem.getPrice();
-                           previousRestaurant = currentRestaurant.getName();
-                           flag = true;
-                       }
-                       else {
-                           throw new InvalidPizzaCombinationException();
-                       }
+               if (matchedMenu.size() > 1){
+                   throw new InvalidPizzaCombinationException();
+               } else if (matchedMenu.size() == 1) {
+                   if ((currentRestaurant.getName().equals(previousRestaurant) || previousRestaurant.equals(""))){
+                       totalCost += matchedMenu.get(0).getPrice();
+                       previousRestaurant = currentRestaurant.getName();
+                       flag = true;
                    }
-
-                   j++;
+                   else {
+                       throw new InvalidPizzaCombinationException();
+                   }
                }
-
                i++;
            }
            if (!flag){
@@ -43,3 +46,14 @@ public class Order {
        return totalCost + BASE_DELIVERY_COST;
     }
 }
+
+
+//List<Restaurant> restaurantList = Arrays.stream(restaurants).toList();
+
+           /*
+           Map<Object, List<Restaurant>> pizzas = restaurantList.stream()
+                   .collect(Collectors.groupingBy(restaurant -> Arrays.stream(restaurant.getMenu())
+                           .filter(menu -> menu.getName().equals(pizzaOrdered))
+                           .collect(Collectors.toList())));
+
+         */
