@@ -2,15 +2,12 @@ package uk.ac.ed.inf;
 
 import org.json.JSONArray;
 
+import static uk.ac.ed.inf.JsonConstants.*;
+
 public class Restaurant {
-    private static final String NAME_KEY = "name";
-    private static final String MENU_KEY = "menu";
-    private static final String PRICE_KEY = "priceInPence";
-    private static final String LONGITUDE_KEY = "longitude";
-    private static final String LATITUDE_KEY = "latitude";
-    private String name;
-    private LngLat location;
-    private Menu[] menuItems;
+    private final String name;
+    private final LngLat location;
+    private final Menu[] menuItems;
 
     public Restaurant(String name, LngLat location, Menu[] menuItems) {
         this.name = name;
@@ -28,15 +25,15 @@ public class Restaurant {
         Restaurant[] restaurants = new Restaurant[restaurantsJson.length()];
 
         for (int i = 0; i < restaurantsJson.length(); i++) {
-            String resName = restaurantsJson.getJSONObject(i).getString(NAME_KEY);
-            double lng = restaurantsJson.getJSONObject(i).getDouble(LONGITUDE_KEY);
-            double lat = restaurantsJson.getJSONObject(i).getDouble(LATITUDE_KEY);
-            JSONArray menu = restaurantsJson.getJSONObject(i).getJSONArray(MENU_KEY);
+            String resName = restaurantsJson.getJSONObject(i).getString(NAME.label);
+            double lng = restaurantsJson.getJSONObject(i).getDouble(LONGITUDE.label);
+            double lat = restaurantsJson.getJSONObject(i).getDouble(LATITUDE.label);
+            JSONArray menu = restaurantsJson.getJSONObject(i).getJSONArray(MENU.label);
 
             Menu[] menuItems = new Menu[menu.length()];
             for (int j = 0; j < menu.length(); j++){
-                String itemName = menu.getJSONObject(j).getString(NAME_KEY);
-                int itemPrice = menu.getJSONObject(j).getInt(PRICE_KEY);
+                String itemName = menu.getJSONObject(j).getString(NAME.label);
+                int itemPrice = menu.getJSONObject(j).getInt(PRICE.label);
                 menuItems[j] = new Menu(itemName, itemPrice);
             }
             restaurants[i] = new Restaurant(resName, new LngLat(lng, lat), menuItems);

@@ -1,16 +1,11 @@
 package uk.ac.ed.inf;
 
-import org.json.JSONArray;
-
-import java.util.HashMap;
-import java.util.Iterator;
-
 /**
  * Defines Menu items for each restaurant
  */
 public class Menu {
-    private String name;
-    private int price;
+    private final String name;
+    private final int price;
 
     public Menu(String name, int price){
         this.name = name;
