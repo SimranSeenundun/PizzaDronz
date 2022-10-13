@@ -7,6 +7,11 @@ import java.util.Arrays;
 public record LngLat (double lng, double lat) {
     private static final double MOVE_LENGTH = 0.00015;
 
+
+    /**
+     * Determines if the current object is in the central area.
+     * @return true if object in centralArea
+     */
     public boolean inCentralArea() {
         CentralArea centralArea = CentralArea.getInstance();
         LngLat[] centralAreaPoints = centralArea.getCentralLngLats();
@@ -21,6 +26,11 @@ public record LngLat (double lng, double lat) {
         return centralAreaPoly.contains(intsAllPoints[intsAllPoints.length - 1][0], intsAllPoints[intsAllPoints.length - 1][1]);
     }
 
+    /**
+     * Converts all LngLats into 2D integer arrays by multiplying them up by a factor of 10.
+     * @param lngLats contains the LngLat objects to convert
+     * @return 2D array of converted LngLats
+     */
     public int[][] removeDecimalPoint(LngLat[] lngLats){
         int mostDecimalPoints = 0;
         double[] nums = new double[lngLats.length * 2];
@@ -44,6 +54,11 @@ public record LngLat (double lng, double lat) {
         return intNums;
     }
 
+    /**
+     * Finds the distance between two LngLat objects.
+     * @param lnglat provided LngLat object to find the distance between.
+     * @return distance as double.
+     */
     public double distanceTo(LngLat lnglat) {
         double x1 = lng;
         double x2 = lnglat.lng;
@@ -53,6 +68,11 @@ public record LngLat (double lng, double lat) {
         return Math.sqrt(Math.pow((x1 - x2), 2) + Math.pow((y1 - y2), 2));
     }
 
+    /**
+     * Determines if the current LngLat object is close to another LngLat.
+     * @param lnglat provided LngLat object to find if it is close to current LngLat object.
+     * @return true if provided LngLat is close.
+     */
     public boolean closeTo(LngLat lnglat) {
         if (distanceTo(lnglat) <= 0.00015) {
             return true;
@@ -60,6 +80,11 @@ public record LngLat (double lng, double lat) {
         return false;
     }
 
+    /**
+     * Finds the next LngLat position from the provided angle.
+     * @param directionAngle direction the next LngLat should be in.
+     * @return LngLat with the next psotion.
+     */
     public LngLat nextPosition(double directionAngle) {
         double newLong = 0;
         double newLat = 0;

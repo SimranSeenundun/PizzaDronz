@@ -9,6 +9,14 @@ import java.util.stream.Stream;
 
 public class Order {
     final static int BASE_DELIVERY_COST = 100;
+
+    /**
+     * Finds the delivery cost of the provided order.
+     * @param restaurants array of all participating restaurants.
+     * @param pizzasOrdered array of all pizzas ordered.
+     * @return integer final delivery cost
+     * @throws InvalidPizzaCombinationException if pizza combination is from different restaurants or more than one restaurant sells the pizza
+     */
     static int getDeliveryCost(Restaurant[] restaurants, ArrayList<String> pizzasOrdered) throws InvalidPizzaCombinationException {
        int totalCost = 0;
        String previousRestaurant = "";

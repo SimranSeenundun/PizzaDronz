@@ -5,6 +5,9 @@ import org.json.JSONArray;
 import java.util.HashMap;
 import java.util.Iterator;
 
+/**
+ * Defines Menu items for each restaurant
+ */
 public class Menu {
     private String name;
     private int price;

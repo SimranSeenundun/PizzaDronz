@@ -5,6 +5,9 @@ import java.awt.*;
 import java.awt.geom.Point2D;
 //ONLY ONE INSTANCE OF A CLASS
 
+/**
+ * Singleton that defines the central area.
+ */
 public class CentralArea {
     private final String CENTRAL_AREA_NAV = "centralarea";
     private final String ILP_URL = "https://ilp-rest.azurewebsites.net/";
@@ -13,14 +16,26 @@ public class CentralArea {
 
     private JSONArray centralArea;
     static CentralArea centralAreaObject = new CentralArea();
+
+    /**
+     * Constructor gets all central area points from the REST-server.
+     */
     private CentralArea() {
         centralArea = ResponseHandler.getJSonResponse(ILP_URL + CENTRAL_AREA_NAV);
     }
 
+    /**
+     * Parses the reference to the singletons only object instance.
+     * @return instance of the CentralArea singleton
+     */
     public static CentralArea getInstance() {
         return centralAreaObject;
     }
 
+    /**
+     * Gets the LngLat objects of all the points that define the central area.
+     * @return array of LngLat[] object points.
+     */
     public LngLat[] getCentralLngLats() {
         LngLat[] centralLngLats = new LngLat[centralArea.length()];
         for (int i = 0; i < centralArea.length(); i++) {

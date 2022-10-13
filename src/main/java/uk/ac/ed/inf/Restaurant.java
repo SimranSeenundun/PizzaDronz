@@ -18,6 +18,11 @@ public class Restaurant {
         this.menuItems = menuItems;
     }
 
+    /**
+     * Gets all restaurants from the REST-server.
+     * @param url provided string url of the rest server to collect the JSONs from.
+     * @return array of restaurants.
+     */
     public static Restaurant[] getRestaurantsFromRestServer(String url) {
         JSONArray restaurantsJson = ResponseHandler.getJSonResponse(url);
         Restaurant[] restaurants = new Restaurant[restaurantsJson.length()];
@@ -39,14 +44,26 @@ public class Restaurant {
         return restaurants;
     }
 
+    /**
+     * Gets all Menu items from the restaurant
+     * @return Array of Menu items.
+     */
     public Menu[] getMenu() {
         return menuItems;
     }
 
+    /**
+     * Gets the name of the restaurant.
+     * @return name of restaurant.
+     */
     public String getName() {
         return name;
     }
 
+    /**
+     * Gets the location of the restaurant.
+     * @return LngLat location of the restaurant.
+     */
     public LngLat getLocation() {
         return location;
     }
