@@ -11,8 +11,8 @@ public class ResponseHandler {
 
     /**
      * Gets the response from the provided server.
-     * @param url string that points to the web server.
-     * @return string response from the server.
+     * @param url string that points to the web server
+     * @return string response from the server
      */
     public static String getResponse(String url) {
         //Creates the HTTP client
@@ -26,8 +26,8 @@ public class ResponseHandler {
 
     /**
      * Gets the JSON response from a provided server.
-     * @param url string that points the web server.
-     * @return JSONArray response form the server.
+     * @param url string that points the web server
+     * @return JSONArray response form the server
      */
     public static JSONArray getJSonResponse(String url) {
         String response = getResponse(url);

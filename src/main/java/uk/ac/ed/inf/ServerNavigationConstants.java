@@ -1,4 +1,7 @@
 package uk.ac.ed.inf;
+/**
+ * URL and navigational constants for the REST-server.
+ */
 
 public enum ServerNavigationConstants {
     ILP_SERVER_URL("https://ilp-rest.azurewebsites.net/"),

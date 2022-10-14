@@ -17,8 +17,8 @@ public class Restaurant {
 
     /**
      * Gets all restaurants from the REST-server.
-     * @param url string that points to the rest server to collect the JSONs from.
-     * @return array of restaurants.
+     * @param url string that points to the rest server to collect the JSONs from
+     * @return array of restaurants
      */
     public static Restaurant[] getRestaurantsFromRestServer(String url) {
         //Gets the restaurants JSON from REST-server
@@ -27,7 +27,7 @@ public class Restaurant {
 
         //Loops through the json
         for (int i = 0; i < restaurantsJson.length(); i++) {
-            //Gets all the details for the restaurant from the json array using the json's keys
+            //Gets all the details for the restaurant from the json array using the json keys
             String resName = restaurantsJson.getJSONObject(i).getString(NAME.label);
             double lng = restaurantsJson.getJSONObject(i).getDouble(LONGITUDE.label);
             double lat = restaurantsJson.getJSONObject(i).getDouble(LATITUDE.label);
@@ -46,8 +46,8 @@ public class Restaurant {
     }
 
     /**
-     * Gets all Menu items from the restaurant
-     * @return Array of Menu items.
+     * Gets all Menu items from the restaurant.
+     * @return Array of Menu items
      */
     public Menu[] getMenu() {
         return menuItems;
@@ -55,7 +55,7 @@ public class Restaurant {
 
     /**
      * Gets the name of the restaurant.
-     * @return name of restaurant.
+     * @return name of restaurant
      */
     public String getName() {
         return name;
@@ -63,7 +63,7 @@ public class Restaurant {
 
     /**
      * Gets the location of the restaurant.
-     * @return LngLat location of the restaurant.
+     * @return LngLat location of the restaurant
      */
     public LngLat getLocation() {
         return location;

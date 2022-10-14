@@ -9,10 +9,10 @@ public class Order {
 
     /**
      * Finds the delivery cost of the provided order.
-     * @param restaurants array of all participating restaurants.
-     * @param pizzasOrdered array of all pizzas ordered.
+     * @param restaurants array of all participating restaurants
+     * @param pizzasOrdered array of all pizzas ordered
      * @return integer final delivery cost
-     * @throws InvalidPizzaCombinationException if pizza combination is from different restaurants or more than one restaurant sells the pizza
+     * @throws InvalidPizzaCombinationException for invalid pizza combinations
      */
     static int getDeliveryCost(Restaurant[] restaurants, ArrayList<String> pizzasOrdered) throws InvalidPizzaCombinationException {
        int totalCost = 0;
@@ -22,7 +22,7 @@ public class Order {
        for (String pizzaOrdered: pizzasOrdered){
            int i = 0;
            boolean flag = false;
-           //Loops through each restaurant, checking through their menus with current order
+           //Loops through each restaurant, checking if current order iteration is a part of their menu
            while (i < restaurants.length && !flag){
                Restaurant currentRestaurant = restaurants[i];
                Menu[] menuItems = currentRestaurant.getMenu();
@@ -44,14 +44,14 @@ public class Order {
                        previousRestaurant = currentRestaurant.getName();
                        flag = true;
                    }
-                   //Thrown iof invalid combination
+                   //Thrown if orders are from different restaurants
                    else {
                        throw new InvalidPizzaCombinationException();
                    }
                }
                i++;
            }
-           //If no order items are not found in any of the restaurants
+           //If no order items are found in any of the restaurants
            if (!flag){
                throw new InvalidPizzaCombinationException();
            }

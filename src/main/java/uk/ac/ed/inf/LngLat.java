@@ -25,7 +25,7 @@ public record LngLat (double lng, double lat) {
         //Central area represented as a polygon
         Polygon centralAreaPoly = new Polygon();
 
-        //Loops through the central area's int lng and lats and adds it to the polygon
+        //Loops through the central area's int lng and lat pairs and adds points to the polygon
         for(int i = 0; i < intAllPoints.length - 1; i++){
             centralAreaPoly.addPoint(intAllPoints[i][0], intAllPoints[i][1]);
         }
@@ -34,22 +34,22 @@ public record LngLat (double lng, double lat) {
     }
 
     /**
-     * Converts all LngLats into 2D integer arrays by multiplying them up by a factor of 10.
-     * @param lngLats contains the LngLat objects to convert
+     * Converts all LngLats into 2D integer arrays by multiplying them by a factor of 10.
+     * @param lngLats objects to be converted
      * @return 2D array of converted LngLats
      */
     public int[][] removeDecimalPoint(LngLat[] lngLats){
         int mostDecimalPoints = 0;
 
-        //Converts the lngs and lats into a double array
+        //Converts the lng and lat pairs into a double array
         double[] nums = new double[lngLats.length * 2];
         for (int i = 0, j = 0; i < lngLats.length; i++ , j +=2){
-            //adds lngs before lats
+            //Adds lngs before lats
             nums[j] = lngLats[i].lng;
             nums[j + 1] = lngLats[i].lat;
         }
 
-        //Loops through the lngs and lats and finds the one with the most decimal points
+        //Loops through the lng and lat pairs and finds the one with the most decimal points
         for (double num: nums){
             String sNum = Double.toString(Math.abs(num));
             int decimalAt = sNum.indexOf(".");
@@ -57,7 +57,7 @@ public record LngLat (double lng, double lat) {
             if (decimalPoints > mostDecimalPoints) mostDecimalPoints = decimalPoints;
         }
 
-        //Creates new 2D int array for lng lats and converts each lng and lat pair
+        //Creates new 2D int array to represent the new lng lat pairs
         int[][] intNums = new int[lngLats.length][2];
         for (int i = 0, j = 0; i < intNums.length; i++, j += 2){
             //Multiplies each lng and lat by a factor of 10, depending on the pair that had the highest amount of decimal points
@@ -88,8 +88,8 @@ public record LngLat (double lng, double lat) {
 
     /**
      * Finds the next LngLat position from the provided angle using trigonometry.
-     * @param directionAngle direction the next LngLat should be in.
-     * @return LngLat with the next psotion.
+     * @param directionAngle direction the next LngLat should be in
+     * @return LngLat with the next position
      */
     public LngLat nextPosition(double directionAngle) {
         double addLong = 0;
