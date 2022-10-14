@@ -29,7 +29,7 @@ public class Order {
 
                //Stream that gets a list of matched menu items to the current pizza order
                List<Menu> matchedMenu = Arrays.stream(menuItems).toList().stream()
-                       .filter(menu -> menu.getName().equals(pizzaOrdered))
+                       .filter(menu -> menu.name().equals(pizzaOrdered))
                        .toList();
 
                //Checks if multiple pizzas have the same name
@@ -40,7 +40,7 @@ public class Order {
                else if (matchedMenu.size() == 1) {
                    //Checks if orders are from multiple restaurants
                    if ((currentRestaurant.getName().equals(previousRestaurant) || previousRestaurant.equals(""))){
-                       totalCost += matchedMenu.get(0).getPrice();
+                       totalCost += matchedMenu.get(0).price();
                        previousRestaurant = currentRestaurant.getName();
                        flag = true;
                    }

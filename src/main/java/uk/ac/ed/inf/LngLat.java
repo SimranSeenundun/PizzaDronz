@@ -73,7 +73,6 @@ public record LngLat (double lng, double lat) {
      * @return distance as double.
      */
     public double distanceTo(LngLat lnglat) {
-
         //Uses pythagoras theorem to find the distance between the two points
         return Math.sqrt(Math.pow((lng - lnglat.lng), 2) + Math.pow((lat - lnglat.lat), 2));
     }
@@ -93,17 +92,21 @@ public record LngLat (double lng, double lat) {
      * @return LngLat with the next psotion.
      */
     public LngLat nextPosition(double directionAngle) {
-        double newLong = 0;
-        double newLat = 0;
+        double addLong = 0;
+        double addLat = 0;
+        //Converts from degrees to radians
+        double angleInRadian = Math.toRadians(directionAngle);
+
         //Checks which way to use sin and cos depending on the angle and uses trig to solve new lng and lat
         if ((directionAngle >= 0 && directionAngle <= 90) || (directionAngle > 180 && directionAngle <= 270)) {
-            newLong += Math.sin(directionAngle) * MOVE_LENGTH;
-            newLat += Math.cos(directionAngle) * MOVE_LENGTH;
-        } else {
-            newLong += Math.cos(directionAngle) * MOVE_LENGTH;
-            newLat += Math.sin(directionAngle) * MOVE_LENGTH;
+            addLong += Math.cos(angleInRadian) * MOVE_LENGTH;
+            addLat += Math.sin(angleInRadian) * MOVE_LENGTH;
         }
-        return new LngLat(newLong, newLat);
+        else {
+            addLong += Math.sin(angleInRadian) * MOVE_LENGTH;
+            addLat += Math.cos(angleInRadian) * MOVE_LENGTH;
+        }
+        return new LngLat(lng + addLong, lat + addLat);
     }
 }
 
