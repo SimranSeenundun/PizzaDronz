@@ -1,7 +1,6 @@
 package uk.ac.ed.inf;
-
-import java.awt.*;
-import java.util.Arrays;
+import java.awt.geom.Path2D;
+import java.util.HashMap;
 
 public record LngLat (double lng, double lat) {
     private static final double MOVE_LENGTH = 0.00015;
@@ -15,22 +14,37 @@ public record LngLat (double lng, double lat) {
         //Defines the central area vertices
         CentralArea centralArea = CentralArea.getInstance();
         LngLat[] centralAreaPoints = centralArea.getCentralLngLats();
+        return isInsideZone(centralAreaPoints);
+    }
 
-        //Adds all the LngLat points into one array for decimal removal
-        LngLat[] allPoints = Arrays.copyOf(centralAreaPoints, centralAreaPoints.length + 1);
-        allPoints[allPoints.length - 1] = this;
-        //Turns current object's and central area points lng lats into integers
-        int[][] intAllPoints = removeDecimalPoint(allPoints);
+    public boolean inNoFlyZone(){
+        //Defines the no-fly zones and their areas
+        NoFlyZones noFlyZonesObject = NoFlyZones.getInstance();
+        HashMap<String, LngLat[]> noFlyZones = noFlyZonesObject.getNoFlyZones();
 
-        //Central area represented as a polygon
-        Polygon centralAreaPoly = new Polygon();
-
-        //Loops through the central area's int lng and lat pairs and adds points to the polygon
-        for(int i = 0; i < intAllPoints.length - 1; i++){
-            centralAreaPoly.addPoint(intAllPoints[i][0], intAllPoints[i][1]);
+        for (String zoneName : noFlyZones.keySet()){
+            LngLat[] currZoneLngLat = noFlyZones.get(zoneName);
+            if (isInsideZone(currZoneLngLat)){
+                return true;
+            }
         }
-        //Checks if the current object's int lng lat are inside the polygon and returns corresponding boolean
-        return centralAreaPoly.contains(intAllPoints[intAllPoints.length - 1][0], intAllPoints[intAllPoints.length - 1][1]);
+        return false;
+    }
+
+    public boolean isInsideZone(LngLat[] lngLatZonePoints) {
+        Path2D zoneArea = new Path2D.Double();
+
+        // Adds initial point
+        zoneArea.moveTo(lngLatZonePoints[0].lng, lngLatZonePoints[0].lat);
+
+        // Adds all the other points
+        for(int i = 1; i < lngLatZonePoints.length; i++) {
+            zoneArea.lineTo(lngLatZonePoints[i].lng, lngLatZonePoints[i].lat);
+        }
+        // Connects last point to first
+        zoneArea.closePath();
+
+        return zoneArea.contains(this.lng, this.lat);
     }
 
     /**
