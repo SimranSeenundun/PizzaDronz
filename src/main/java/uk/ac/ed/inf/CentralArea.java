@@ -21,7 +21,7 @@ public class CentralArea {
     }
 
     /**
-     * Parses the reference to the singleton's only object instance.
+     * Parses the reference to the singletons only object instance.
      * @return instance of the CentralArea singleton
      */
     public static CentralArea getInstance() {
