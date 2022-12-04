@@ -8,8 +8,15 @@ public enum JsonConstants {
     MENU("menu"),
     PRICE("priceInPence"),
     LONGITUDE("longitude"),
-    LATITUDE("latitude");
-
+    LATITUDE("latitude"),
+    COORDINATES("coordinates"),
+    ORDER_NUMBER("orderNo"),
+    ORDER_DATE("orderDate"),
+    CUSTOMER_NAME("customer"),
+    CARD_NUMBER("creditCardNumber"),
+    CARD_EXPIRY("creditCardExpiry"),
+    CARD_CVV("cvv"),
+    ORDER_ITEMS("orderItems");
     public final String label;
 
     JsonConstants(String label) {
