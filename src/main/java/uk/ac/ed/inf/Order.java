@@ -14,19 +14,28 @@ public class Order {
     final static int BASE_DELIVERY_COST = 100;
     final static int STANDARD_CARD_NUMBER_LENGTH = 16;
     final static int STANDARD_CARD_EXPIRY_LENGTH = 5;
+    final static int STANDARD_CARD_MAX_EXPIRY = 50;
+    final static int STANDARD_CARD_CVV_LENGTH = 3;
+    final static int CURRENT_CENTURY = ((int) LocalDate.now().getYear() / 1000) * 1000;
+
     private String orderNum;
     private ArrayList<String> pizzasOrdered;
     private OrderOutcome orderOutcome;
     private int totalOrderPrice;
 
-    public Order(JSONObject orderJson){
+    public Order(JSONObject orderJson) throws InvalidOrderException {
         orderNum = orderJson.getString(ORDER_NUMBER.label);
         JSONArray pizzasOrderedJson = orderJson.getJSONArray(ORDER_ITEMS.label);
         for (int i = 0; i < pizzasOrderedJson.length(); i++){
             pizzasOrdered.add(pizzasOrderedJson.getString(i));
         }
         orderOutcome = null;
-        totalOrderPrice = 0;
+        totalOrderPrice = orderJson.getInt(PRICE.label);
+        checkCardValidity(orderJson);
+
+        if (orderOutcome != null){
+            throw new InvalidOrderException(orderOutcome);
+        }
     }
 
     private void checkCardValidity(JSONObject orderJson){
@@ -35,7 +44,7 @@ public class Order {
         String cardCVV = orderJson.getString(CARD_CVV.label);
 
         try {
-            Integer.getInteger(cardNumber);
+            Integer.parseInt(cardNumber);
         } catch (NumberFormatException e){
             orderOutcome = InvalidCardNumber;
         }
@@ -48,8 +57,28 @@ public class Order {
             orderOutcome = InvalidExpiryDate;
         }
 
-        //LocalDate expiryDate =
+        try{
+            int year = Integer.getInteger(cardExpiry.substring(3,5));
+            int month = Integer.getInteger(cardExpiry.substring(0,2));
+            LocalDate currDate = LocalDate.now();
 
+            // Checks if expiration is in date - century, year and month
+             if (!((year + CURRENT_CENTURY < (currDate.getYear() + STANDARD_CARD_MAX_EXPIRY)) && (year < currDate.getYear()) && (month < currDate.getMonthValue()))){
+                 orderOutcome = InvalidExpiryDate;
+             }
+        } catch (NumberFormatException e){
+            orderOutcome = InvalidExpiryDate;
+        }
+
+        try {
+            Integer.parseInt(cardCVV);
+        } catch (NumberFormatException e){
+            orderOutcome = InvalidCvv;
+        }
+
+        if (cardCVV.length() != STANDARD_CARD_CVV_LENGTH){
+            orderOutcome = InvalidCvv;
+        }
     }
 
     /**
@@ -79,7 +108,7 @@ public class Order {
 
                //Checks if multiple pizzas have the same name
                if (matchedMenu.size() > 1) {
-                   throw new InvalidPizzaCombinationException();
+                   throw new InvalidPizzaCombinationException(InvalidPizzaCount);
                }
                //Checks if the menu item has been found for this current restaurant
                else if (matchedMenu.size() == 1) {
@@ -91,18 +120,29 @@ public class Order {
                    }
                    //Thrown if orders are from different restaurants
                    else {
-                       throw new InvalidPizzaCombinationException();
+                       throw new InvalidPizzaCombinationException(InvalidPizzaCombinationMultipleSuppliers);
                    }
                }
                i++;
            }
            //If no order items are found in any of the restaurants
            if (!flag) {
-               throw new InvalidPizzaCombinationException();
+               throw new InvalidPizzaCombinationException(InvalidPizzaNotDefined);
            }
        }
 
        return totalCost + BASE_DELIVERY_COST;
+    }
+
+    public int getDeliveryCost(Restaurant[] restaurants) throws InvalidOrderException{
+        int totalOrderPrice;
+        try {
+            totalOrderPrice = getDeliveryCost(restaurants, pizzasOrdered);
+        } catch (InvalidPizzaCombinationException e){
+            orderOutcome = e.getReason();
+            throw e;
+        }
+        return totalOrderPrice;
     }
 
 }
