@@ -7,6 +7,7 @@ public enum JsonConstants {
     NAME("name"),
     MENU("menu"),
     PRICE("priceInPence"),
+    PRICE_TOTAL("priceTotalInPence"),
     LONGITUDE("longitude"),
     LATITUDE("latitude"),
     COORDINATES("coordinates"),

@@ -16,6 +16,7 @@ public class Order {
     final static int STANDARD_CARD_EXPIRY_LENGTH = 5;
     final static int STANDARD_CARD_MAX_EXPIRY = 50;
     final static int STANDARD_CARD_CVV_LENGTH = 3;
+    final static int MAX_NUM_PIZZAS = 4;
     final static int CURRENT_CENTURY = ((int) LocalDate.now().getYear() / 1000) * 1000;
 
     private String orderNum;
@@ -23,19 +24,16 @@ public class Order {
     private OrderOutcome orderOutcome;
     private int totalOrderPrice;
 
-    public Order(JSONObject orderJson) throws InvalidOrderException {
+    public Order(JSONObject orderJson) {
         orderNum = orderJson.getString(ORDER_NUMBER.label);
         JSONArray pizzasOrderedJson = orderJson.getJSONArray(ORDER_ITEMS.label);
+        pizzasOrdered = new ArrayList<>();
         for (int i = 0; i < pizzasOrderedJson.length(); i++){
             pizzasOrdered.add(pizzasOrderedJson.getString(i));
         }
-        orderOutcome = null;
-        totalOrderPrice = orderJson.getInt(PRICE.label);
+        orderOutcome = ValidButNotDelivered;
+        totalOrderPrice = orderJson.getInt(PRICE_TOTAL.label);
         checkCardValidity(orderJson);
-
-        if (orderOutcome != null){
-            throw new InvalidOrderException(orderOutcome);
-        }
     }
 
     private void checkCardValidity(JSONObject orderJson){
@@ -44,7 +42,7 @@ public class Order {
         String cardCVV = orderJson.getString(CARD_CVV.label);
 
         try {
-            Integer.parseInt(cardNumber);
+            Long.parseLong(cardNumber);
         } catch (NumberFormatException e){
             orderOutcome = InvalidCardNumber;
         }
@@ -58,8 +56,8 @@ public class Order {
         }
 
         try{
-            int year = Integer.getInteger(cardExpiry.substring(3,5));
-            int month = Integer.getInteger(cardExpiry.substring(0,2));
+            int year = Integer.parseInt(cardExpiry.substring(3,5));
+            int month = Integer.parseInt(cardExpiry.substring(0,2));
             LocalDate currDate = LocalDate.now();
 
             // Checks if expiration is in date - century, year and month
@@ -88,7 +86,12 @@ public class Order {
      * @return integer final delivery cost
      * @throws InvalidPizzaCombinationException for invalid pizza combinations
      */
-    static int getDeliveryCost(Restaurant[] restaurants, ArrayList<String> pizzasOrdered) throws InvalidPizzaCombinationException {
+    static int getDeliveryCost(Restaurant[] restaurants, ArrayList<String> pizzasOrdered) throws InvalidOrderException {
+        // Checks if order has pizzas then the drone can carry
+        if (pizzasOrdered.size() > MAX_NUM_PIZZAS){
+            throw new InvalidPizzaCombinationException(InvalidPizzaCount);
+        }
+
        int totalCost = 0;
        String previousRestaurant = "";
 
@@ -106,9 +109,9 @@ public class Order {
                        .filter(menu -> menu.name().equals(pizzaOrdered))
                        .toList();
 
-               //Checks if multiple pizzas have the same name
+               //Checks if multiple pizzas have the same name from multiple restaurant
                if (matchedMenu.size() > 1) {
-                   throw new InvalidPizzaCombinationException(InvalidPizzaCount);
+                   throw new InvalidOrderException(Invalid);
                }
                //Checks if the menu item has been found for this current restaurant
                else if (matchedMenu.size() == 1) {
@@ -134,15 +137,25 @@ public class Order {
        return totalCost + BASE_DELIVERY_COST;
     }
 
-    public int getDeliveryCost(Restaurant[] restaurants) throws InvalidOrderException{
-        int totalOrderPrice;
+    public int getDeliveryCost(Restaurant[] restaurants){
+        int totalOrderPrice = this.totalOrderPrice;
         try {
             totalOrderPrice = getDeliveryCost(restaurants, pizzasOrdered);
-        } catch (InvalidPizzaCombinationException e){
+        } catch (InvalidOrderException e){
             orderOutcome = e.getReason();
-            throw e;
         }
         return totalOrderPrice;
     }
 
+    public int getTotalOrderPrice() {
+        return totalOrderPrice;
+    }
+
+    public OrderOutcome getOrderOutcome() {
+        return orderOutcome;
+    }
+
+    public void setOrderOutcome(OrderOutcome orderOutcome) {
+        this.orderOutcome = orderOutcome;
+    }
 }
