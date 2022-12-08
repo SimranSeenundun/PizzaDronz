@@ -3,7 +3,7 @@ package uk.ac.ed.inf;
 public class Battery {
     public static final int DEFAULT_MAX_CHARGE = 1000;
 
-    private final int currentCharge;
+    private int currentCharge;
 
     private final int maxCharge;
 
@@ -22,5 +22,12 @@ public class Battery {
 
     public int getMaxCharge() {
         return maxCharge;
+    }
+
+    public void decrementCharge() throws BatteryOutOfChargeException{
+        currentCharge -= 1;
+        if (currentCharge <= 0){
+            throw new BatteryOutOfChargeException();
+        }
     }
 }

@@ -2,6 +2,7 @@ package uk.ac.ed.inf;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.math.BigDecimal;
 import java.util.HashMap;
 
 import static uk.ac.ed.inf.JsonConstants.*;
@@ -47,10 +48,10 @@ public class NoFlyZones {
             // Gets all points and converts them into LngLat objects
             for (int j = 0; j < coordinates.length(); j++){
                 JSONArray lngLatJson = coordinates.getJSONArray(j);
-                lngLatsOfZone[j] = new LngLat((double) lngLatJson.get(0), (double) lngLatJson.get(1));
+                lngLatsOfZone[j] = new LngLat(((BigDecimal) lngLatJson.get(0)).doubleValue(), ((BigDecimal) lngLatJson.get(1)).doubleValue());
             }
 
-            // Puts collected points into map under
+            // Puts collected points into map under the name of zone
             noFlyZones.put(zoneName, lngLatsOfZone);
         }
         return noFlyZones;

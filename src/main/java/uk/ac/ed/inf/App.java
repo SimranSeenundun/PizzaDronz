@@ -6,11 +6,13 @@ import org.json.JSONObject;
 import java.time.LocalDate;
 import java.time.Month;
 import java.util.ArrayList;
+import java.util.LinkedList;
 
 import static uk.ac.ed.inf.ServerNavigationConstants.*;
 
 public class App
 {
+    public static LngLat appleTonTower = new LngLat(-3.186874, 55.944494);
     public static void main( String[] args ) {
         String date = "2023-01-01";
         JSONArray ordersJson = ResponseHandler.getJSonResponse(ILP_SERVER_URL.label + ORDERS.label + date);
@@ -27,8 +29,13 @@ public class App
             orders.add(new Order(orderJson));
         }
 
+        Restaurant[] restaurants = Restaurant.getRestaurantsFromRestServer(ILP_SERVER_URL.label + RESTAURANTS.label);
 
         // Drone movement
-        Drone drone = new Drone();
+        Drone drone = new Drone(appleTonTower);
+
+        System.out.println(restaurants[0].getName() + ": " + restaurants[0].getLocation().lng() + " " + );
+
+
     }
 }

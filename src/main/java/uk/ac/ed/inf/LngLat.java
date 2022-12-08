@@ -3,7 +3,7 @@ import java.awt.geom.Path2D;
 import java.util.HashMap;
 
 public record LngLat (double lng, double lat) {
-    private static final double MOVE_LENGTH = 0.00015;
+    public static final double MOVE_LENGTH = 0.00015;
 
 
     /**
@@ -111,16 +111,18 @@ public record LngLat (double lng, double lat) {
         //Converts from degrees to radians
         double angleInRadian = Math.toRadians(directionAngle);
 
-        //Checks which way to use sin and cos depending on the angle and uses trig to solve new lng and lat
-        if ((directionAngle >= 0 && directionAngle <= 90) || (directionAngle > 180 && directionAngle <= 270)) {
-            addLong += Math.cos(angleInRadian) * MOVE_LENGTH;
-            addLat += Math.sin(angleInRadian) * MOVE_LENGTH;
-        }
-        else {
-            addLong += Math.sin(angleInRadian) * MOVE_LENGTH;
-            addLat += Math.cos(angleInRadian) * MOVE_LENGTH;
-        }
+        addLong += Math.cos(angleInRadian) * MOVE_LENGTH;
+        addLat += Math.sin(angleInRadian) * MOVE_LENGTH;
         return new LngLat(lng + addLong, lat + addLat);
+    }
+
+    /**
+     * Determines if a provided LngLat object has the same lng and lat as the current object
+     * @param lngLat the object to compare
+     * @return true if the object has the same lng and lats
+     */
+    public boolean equals(LngLat lngLat){
+        return lngLat.lng == lng && lngLat.lat == lat;
     }
 }
 
