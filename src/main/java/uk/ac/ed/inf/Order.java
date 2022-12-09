@@ -1,5 +1,6 @@
 package uk.ac.ed.inf;
 
+import org.javatuples.Pair;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -86,14 +87,15 @@ public class Order {
      * @return integer final delivery cost
      * @throws InvalidPizzaCombinationException for invalid pizza combinations
      */
-    static int getDeliveryCost(Restaurant[] restaurants, ArrayList<String> pizzasOrdered) throws InvalidOrderException {
+    static Pair<Restaurant, Integer> getRestaurantDeliveryCostPair(Restaurant[] restaurants, ArrayList<String> pizzasOrdered) throws InvalidOrderException {
         // Checks if order has pizzas then the drone can carry
         if (pizzasOrdered.size() > MAX_NUM_PIZZAS){
             throw new InvalidPizzaCombinationException(InvalidPizzaCount);
         }
 
        int totalCost = 0;
-       String previousRestaurant = "";
+       String previousRestaurantName = "";
+       Restaurant chosenRestaurant = null;
 
        //Loops through each of the pizzas ordered
        for (String pizzaOrdered: pizzasOrdered) {
@@ -109,16 +111,17 @@ public class Order {
                        .filter(menu -> menu.name().equals(pizzaOrdered))
                        .toList();
 
-               //Checks if multiple pizzas have the same name from multiple restaurant
+               //Checks if multiple pizzas have the same name
                if (matchedMenu.size() > 1) {
                    throw new InvalidOrderException(Invalid);
                }
                //Checks if the menu item has been found for this current restaurant
                else if (matchedMenu.size() == 1) {
                    //Checks if orders are from multiple restaurants
-                   if ((currentRestaurant.getName().equals(previousRestaurant) || previousRestaurant.equals(""))) {
+                   if ((currentRestaurant.getName().equals(previousRestaurantName) || previousRestaurantName.equals(""))) {
                        totalCost += matchedMenu.get(0).price();
-                       previousRestaurant = currentRestaurant.getName();
+                       previousRestaurantName = currentRestaurant.getName();
+                       chosenRestaurant = currentRestaurant;
                        flag = true;
                    }
                    //Thrown if orders are from different restaurants
@@ -134,13 +137,13 @@ public class Order {
            }
        }
 
-       return totalCost + BASE_DELIVERY_COST;
+       return new Pair<>(chosenRestaurant, totalCost + BASE_DELIVERY_COST);
     }
 
     public int getDeliveryCost(Restaurant[] restaurants){
         int totalOrderPrice = this.totalOrderPrice;
         try {
-            totalOrderPrice = getDeliveryCost(restaurants, pizzasOrdered);
+            totalOrderPrice = getRestaurantDeliveryCostPair(restaurants, pizzasOrdered).getValue1();
         } catch (InvalidOrderException e){
             orderOutcome = e.getReason();
         }
@@ -157,5 +160,18 @@ public class Order {
 
     public void setOrderOutcome(OrderOutcome orderOutcome) {
         this.orderOutcome = orderOutcome;
+    }
+
+    public Restaurant getOrderRestaurant(Restaurant[] restaurants){
+        try {
+            return getRestaurantDeliveryCostPair(restaurants, pizzasOrdered).getValue0();
+        } catch (InvalidOrderException e){
+            orderOutcome = e.getReason();
+        }
+        return null;
+    }
+
+    public String getOrderNum() {
+        return orderNum;
     }
 }

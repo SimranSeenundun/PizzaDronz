@@ -2,19 +2,20 @@ package uk.ac.ed.inf;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
-
-import java.time.LocalDate;
-import java.time.Month;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.LinkedList;
 
 import static uk.ac.ed.inf.ServerNavigationConstants.*;
 
 public class App
 {
-    public static LngLat appleTonTower = new LngLat(-3.186874, 55.944494);
+    public static String SERVER_URL = "";
+
     public static void main( String[] args ) {
         String date = "2023-01-01";
+
+
+        LocalDateTime startTime = LocalDateTime.now();
         JSONArray ordersJson = ResponseHandler.getJSonResponse(ILP_SERVER_URL.label + ORDERS.label + date);
         ArrayList<Order> orders = new ArrayList<>();
 
@@ -32,10 +33,24 @@ public class App
         Restaurant[] restaurants = Restaurant.getRestaurantsFromRestServer(ILP_SERVER_URL.label + RESTAURANTS.label);
 
         // Drone movement
-        Drone drone = new Drone(appleTonTower);
+        Drone drone = new Drone();
 
-        System.out.println(restaurants[0].getName() + ": " + restaurants[0].getLocation().lng() + " " + );
+        for(Order order: orders){
+            Restaurant restaurantOrder = order.getOrderRestaurant(restaurants);
+            if (order.getOrderOutcome() != OrderOutcome.ValidButNotDelivered){
+                continue;
+            }
+            try {
+                drone.executeOrder(order, restaurantOrder);
+            } catch (BatteryOutOfChargeException e){
+                break;
+            }
+        }
 
+        FlightPoint point = drone.getStartingPoint();
 
+        JsonHandler.createDeliveriesJson(date, orders);
+        JsonHandler.createFlightPathJson(date, point, startTime);
+        JsonHandler.createDroneGeoJson(date, point);
     }
 }

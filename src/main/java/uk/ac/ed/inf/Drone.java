@@ -11,20 +11,24 @@ import static uk.ac.ed.inf.State.*;
 import static uk.ac.ed.inf.OrderOutcome.*;
 
 public class Drone {
+    public static LngLat appleTonTower = new LngLat(-3.186874, 55.944494);
     private LngLat location;
     private FlightPoint currFlightPoint;
+    private FlightPoint startingPoint;
     private State state;
     private Order currOrder;
-    private Battery battery;
+    private final Battery battery;
     private Boolean isHoldingOrder;
 
     public Drone() {
-        location = null;
+        location = appleTonTower;
         state = HOVER;
         currOrder = null;
         battery = new Battery();
         isHoldingOrder = false;
-        currFlightPoint = null;
+        currFlightPoint = new FlightPoint(appleTonTower);
+        currFlightPoint.setTimeExecuted(LocalDateTime.now());
+        startingPoint = currFlightPoint;
     }
 
     public Drone(LngLat location) {
@@ -34,24 +38,54 @@ public class Drone {
         battery = new Battery();
         isHoldingOrder = false;
         currFlightPoint = new FlightPoint(location);
+        currFlightPoint.setTimeExecuted(LocalDateTime.now());
+        startingPoint = currFlightPoint;
     }
 
     public void flyTo(LngLat destination) throws BatteryOutOfChargeException{
         state = FLYING;
         LinkedList<FlightPoint> flightPath = generateFlightPath(location, destination);
+        fly(flightPath);
+    }
+
+    public void fly(LinkedList<FlightPoint> flightPath) throws BatteryOutOfChargeException {
+        state = FLYING;
         currFlightPoint.setNextPoint(flightPath.getFirst());
 
         for(FlightPoint flightPoint: flightPath){
             location = flightPoint.getLngLat();
             flightPoint.setOrderNumber(currOrder);
-            flightPoint.setTimeExecuted(LocalDateTime.now());
             battery.decrementCharge();
         }
+        currFlightPoint = flightPath.getLast();
+
+    }
+
+    public OrderOutcome executeOrder(Order order, Restaurant restaurant) throws BatteryOutOfChargeException{
+        currOrder = order;
+        LinkedList<FlightPoint> flightPathThere = generateFlightPath(location, restaurant.getLocation());
+        LinkedList<FlightPoint> flightPathBack = generateFlightPath(restaurant.getLocation(), appleTonTower);
+
+        if (flightPathThere.size() + flightPathBack.size() > battery.getCurrentCharge()){
+            if (!location.inCentralArea()){
+                flyTo(appleTonTower);
+            }
+            throw new BatteryOutOfChargeException();
+        } else {
+            fly(flightPathThere);
+            hover();
+            pickupOrder();
+            fly(flightPathBack);
+            hover();
+            order.setOrderOutcome(Delivered);
+        }
+        return order.getOrderOutcome();
     }
 
     public void hover() throws BatteryOutOfChargeException{
         state = HOVER;
         FlightPoint hoverPoint = new FlightPoint(currFlightPoint.getLngLat(), currFlightPoint, null);
+        hoverPoint.setTimeExecuted(LocalDateTime.now());
         currFlightPoint.setNextPoint(hoverPoint);
         currFlightPoint = hoverPoint;
         battery.decrementCharge();
@@ -107,6 +141,7 @@ public class Drone {
 
             explored.add(fringe.get(0).getValue0());
             currentPoint = fringe.pop().getValue0();
+            currentPoint.setTimeExecuted(LocalDateTime.now());
         }
 
         currentPoint = explored.getLast();
@@ -119,4 +154,17 @@ public class Drone {
         }
         return goalPath;
     }
+
+    public LngLat getLocation() {
+        return location;
+    }
+
+    public int getChargeAmount(){
+        return battery.getCurrentCharge();
+    }
+
+    public FlightPoint getStartingPoint() {
+        return startingPoint;
+    }
+
 }

@@ -48,40 +48,6 @@ public record LngLat (double lng, double lat) {
     }
 
     /**
-     * Converts all LngLats into 2D integer arrays by multiplying them by a factor of 10.
-     * @param lngLats objects to be converted
-     * @return 2D array of converted LngLats
-     */
-    public int[][] removeDecimalPoint(LngLat[] lngLats){
-        int mostDecimalPoints = 0;
-
-        //Converts the lng and lat pairs into a double array
-        double[] nums = new double[lngLats.length * 2];
-        for (int i = 0, j = 0; i < lngLats.length; i++ , j +=2){
-            //Adds lngs before lats
-            nums[j] = lngLats[i].lng;
-            nums[j + 1] = lngLats[i].lat;
-        }
-
-        //Loops through the lng and lat pairs and finds the one with the most decimal points
-        for (double num: nums){
-            String sNum = Double.toString(Math.abs(num));
-            int decimalAt = sNum.indexOf(".");
-            int decimalPoints =  sNum.length() - (decimalAt + 1);
-            if (decimalPoints > mostDecimalPoints) mostDecimalPoints = decimalPoints;
-        }
-
-        //Creates new 2D int array to represent the new lng lat pairs
-        int[][] intNums = new int[lngLats.length][2];
-        for (int i = 0, j = 0; i < intNums.length; i++, j += 2){
-            //Multiplies each lng and lat by a factor of 10, depending on the pair that had the highest amount of decimal points
-            intNums[i][0] = (int) (nums[j] * Math.pow(10, mostDecimalPoints));
-            intNums[i][1] = (int) (nums[j + 1] * Math.pow(10, mostDecimalPoints));
-        }
-        return intNums;
-    }
-
-    /**
      * Finds the distance between two LngLat objects.
      * @param lnglat provided LngLat object to find the distance between.
      * @return distance as double.
@@ -123,6 +89,11 @@ public record LngLat (double lng, double lat) {
      */
     public boolean equals(LngLat lngLat){
         return lngLat.lng == lng && lngLat.lat == lat;
+    }
+
+    @Override
+    public String toString() {
+        return lng + " " + lat;
     }
 }
 

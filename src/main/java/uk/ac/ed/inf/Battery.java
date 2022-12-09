@@ -1,7 +1,7 @@
 package uk.ac.ed.inf;
 
 public class Battery {
-    public static final int DEFAULT_MAX_CHARGE = 1000;
+    public static final int DEFAULT_MAX_CHARGE = 2000;
 
     private int currentCharge;
 

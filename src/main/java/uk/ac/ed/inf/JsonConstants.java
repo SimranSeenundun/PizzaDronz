@@ -17,7 +17,18 @@ public enum JsonConstants {
     CARD_NUMBER("creditCardNumber"),
     CARD_EXPIRY("creditCardExpiry"),
     CARD_CVV("cvv"),
-    ORDER_ITEMS("orderItems");
+    ORDER_ITEMS("orderItems"),
+    OUTCOME("outcome"),
+    FROM_LONGITUDE("fromLongitude"),
+    FROM_LATITUDE("fromLatitude"),
+    TO_LONGITUDE("toLongitude"),
+    TO_LATITUDE("toLatitude"),
+    ANGLE("angle"),
+    TICKS_SINCE_START("ticksSinceStartOfCalculation");
+
+
+
+
     public final String label;
 
     JsonConstants(String label) {

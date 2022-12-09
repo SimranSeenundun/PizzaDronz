@@ -79,4 +79,8 @@ public class FlightPoint {
     public boolean equals(FlightPoint flightPoint) {
         return flightPoint.getLngLat().equals(lngLatCoordinates);
     }
+
+    public LocalDateTime getTimeExecuted() {
+        return timeExecuted;
+    }
 }
