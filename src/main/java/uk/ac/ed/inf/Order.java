@@ -26,6 +26,7 @@ public class Order {
     private int totalOrderPrice;
 
     public Order(JSONObject orderJson) {
+        // Validates order
         orderNum = orderJson.getString(ORDER_NUMBER.label);
         JSONArray pizzasOrderedJson = orderJson.getJSONArray(ORDER_ITEMS.label);
         pizzasOrdered = new ArrayList<>();
@@ -37,11 +38,16 @@ public class Order {
         checkCardValidity(orderJson);
     }
 
+    /**
+     * Checks the validity of the card's information
+     * @param orderJson the order JSON with the card information
+     */
     private void checkCardValidity(JSONObject orderJson){
         String cardNumber = orderJson.getString(CARD_NUMBER.label);
         String cardExpiry = orderJson.getString(CARD_EXPIRY.label);
         String cardCVV = orderJson.getString(CARD_CVV.label);
 
+        // Checks card number validity - length & is numeric
         try {
             Long.parseLong(cardNumber);
         } catch (NumberFormatException e){
@@ -52,6 +58,7 @@ public class Order {
             orderOutcome = InvalidCardNumber;
         }
 
+        // Checks expiry validity - is numeric, length & in date
         if (cardExpiry.length() != STANDARD_CARD_EXPIRY_LENGTH){
             orderOutcome = InvalidExpiryDate;
         }
@@ -69,6 +76,7 @@ public class Order {
             orderOutcome = InvalidExpiryDate;
         }
 
+        // Checks card's CVV validity - length and is numeric
         try {
             Integer.parseInt(cardCVV);
         } catch (NumberFormatException e){
@@ -81,7 +89,7 @@ public class Order {
     }
 
     /**
-     * Finds the delivery cost of the provided order.
+     * Finds the delivery cost and restaurant of the provided order.
      * @param restaurants array of all participating restaurants
      * @param pizzasOrdered array of all pizzas ordered
      * @return integer final delivery cost
@@ -140,6 +148,11 @@ public class Order {
        return new Pair<>(chosenRestaurant, totalCost + BASE_DELIVERY_COST);
     }
 
+    /**
+     * Gets just the delivery cost of the current order
+     * @param restaurants all participating restaurants
+     * @return the total cost of order
+     */
     public int getDeliveryCost(Restaurant[] restaurants){
         int totalOrderPrice = this.totalOrderPrice;
         try {
@@ -162,6 +175,11 @@ public class Order {
         this.orderOutcome = orderOutcome;
     }
 
+    /**
+     * Gets the restaurant the oder is from
+     * @param restaurants all participating restaurants
+     * @return the restaurant making the order
+     */
     public Restaurant getOrderRestaurant(Restaurant[] restaurants){
         try {
             return getRestaurantDeliveryCostPair(restaurants, pizzasOrdered).getValue0();

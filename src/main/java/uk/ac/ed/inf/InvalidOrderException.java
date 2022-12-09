@@ -1,5 +1,9 @@
 package uk.ac.ed.inf;
 
+/**
+ * Is thrown when an invalid order is detected and saves the reason
+ * Parent class of InvalidPizzaCombinationException
+ */
 public class InvalidOrderException extends Exception{
     OrderOutcome reason;
     public InvalidOrderException(OrderOutcome reason){

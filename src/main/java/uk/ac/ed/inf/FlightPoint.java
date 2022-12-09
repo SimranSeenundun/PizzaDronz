@@ -1,8 +1,11 @@
 package uk.ac.ed.inf;
 
-import java.sql.Time;
 import java.time.LocalDateTime;
 
+/**
+ * Flight points the drone uses to navigate from one point to another
+ * A more bespoke representation of a graph node structure tailored to this participial scenario
+ */
 public class FlightPoint {
     private LngLat lngLatCoordinates;
     private FlightPoint fromPoint;

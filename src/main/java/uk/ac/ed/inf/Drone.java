@@ -3,13 +3,15 @@ package uk.ac.ed.inf;
 import org.javatuples.Pair;
 
 import java.time.LocalDateTime;
-import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
 import static uk.ac.ed.inf.State.*;
 import static uk.ac.ed.inf.OrderOutcome.*;
 
+/**
+ * Class describing the drone object
+ */
 public class Drone {
     public static LngLat appleTonTower = new LngLat(-3.186874, 55.944494);
     private LngLat location;
@@ -42,12 +44,22 @@ public class Drone {
         startingPoint = currFlightPoint;
     }
 
+    /**
+     * Makes the drone fly to a specific LngLat location
+     * @param destination LngLat to move the drone to
+     * @throws BatteryOutOfChargeException
+     */
     public void flyTo(LngLat destination) throws BatteryOutOfChargeException{
         state = FLYING;
         LinkedList<FlightPoint> flightPath = generateFlightPath(location, destination);
         fly(flightPath);
     }
 
+    /**
+     * Makes the drone fly using a specific predefined flight path
+     * @param flightPath the path to follow
+     * @throws BatteryOutOfChargeException
+     */
     public void fly(LinkedList<FlightPoint> flightPath) throws BatteryOutOfChargeException {
         state = FLYING;
         currFlightPoint.setNextPoint(flightPath.getFirst());
@@ -61,17 +73,26 @@ public class Drone {
 
     }
 
+    /**
+     * Executes the specified order by travelling to and from the restaurants with the order
+     * @param order the specified order to execute with this drone
+     * @param restaurant the restaurant to get the order from
+     * @return the outcome of the order
+     * @throws BatteryOutOfChargeException
+     */
     public OrderOutcome executeOrder(Order order, Restaurant restaurant) throws BatteryOutOfChargeException{
         currOrder = order;
         LinkedList<FlightPoint> flightPathThere = generateFlightPath(location, restaurant.getLocation());
         LinkedList<FlightPoint> flightPathBack = generateFlightPath(restaurant.getLocation(), appleTonTower);
 
+        // Checks if it is possible with the current charge to execute the order
         if (flightPathThere.size() + flightPathBack.size() > battery.getCurrentCharge()){
             if (!location.inCentralArea()){
                 flyTo(appleTonTower);
             }
             throw new BatteryOutOfChargeException();
         } else {
+            // Executes the order
             fly(flightPathThere);
             hover();
             pickupOrder();
@@ -82,6 +103,10 @@ public class Drone {
         return order.getOrderOutcome();
     }
 
+    /**
+     * Hovers above the current location for one move
+     * @throws BatteryOutOfChargeException
+     */
     public void hover() throws BatteryOutOfChargeException{
         state = HOVER;
         FlightPoint hoverPoint = new FlightPoint(currFlightPoint.getLngLat(), currFlightPoint, null);
@@ -147,6 +172,7 @@ public class Drone {
         currentPoint = explored.getLast();
         LinkedList<FlightPoint> goalPath = new LinkedList<>();
 
+        // Sets the flightPoint pointers to create one final goal path
         while (currentPoint.getFromPoint() != null){
             goalPath.addFirst(currentPoint);
             currentPoint = currentPoint.getFromPoint();

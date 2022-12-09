@@ -1,5 +1,8 @@
 package uk.ac.ed.inf;
 
+/**
+ * 16 Possible flight directions and their values in degrees - starts from east as 0 and goes round anticlockwise
+ */
 public enum FlightDirection {
     North(90),
     NorthNorthEast(67.5),
@@ -18,10 +21,7 @@ public enum FlightDirection {
     NorthWest(135),
     NorthNorthWest(112.5);
 
-
-
     public final double label;
-
     FlightDirection(double label) {
         this.label = label;
     }

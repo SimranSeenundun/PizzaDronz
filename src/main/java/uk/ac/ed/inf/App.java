@@ -36,7 +36,6 @@ public class App
 
         // Drone movement
         Drone drone = new Drone();
-
         for(Order order: orders){
             Restaurant restaurantOrder = order.getOrderRestaurant(restaurants);
             if (order.getOrderOutcome() != OrderOutcome.ValidButNotDelivered){

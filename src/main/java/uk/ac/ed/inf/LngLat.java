@@ -17,6 +17,10 @@ public record LngLat (double lng, double lat) {
         return isInsideZone(centralAreaPoints);
     }
 
+    /**
+     * Finds if current LngLat is inside no-fly zone
+     * @return true if inside no-fly zone otherwise false
+     */
     public boolean inNoFlyZone(){
         //Defines the no-fly zones and their areas
         NoFlyZones noFlyZonesObject = NoFlyZones.getInstance();
@@ -31,6 +35,11 @@ public record LngLat (double lng, double lat) {
         return false;
     }
 
+    /**
+     * Finds if current LngLat point is inside a certain zone
+     * @param lngLatZonePoints points of the zone
+     * @return true if it is inside the zone otherwise false
+     */
     public boolean isInsideZone(LngLat[] lngLatZonePoints) {
         Path2D zoneArea = new Path2D.Double();
 
