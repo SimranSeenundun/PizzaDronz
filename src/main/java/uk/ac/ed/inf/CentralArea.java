@@ -4,7 +4,6 @@ import org.json.JSONArray;
 import static uk.ac.ed.inf.JsonConstants.LATITUDE;
 import static uk.ac.ed.inf.JsonConstants.LONGITUDE;
 import static uk.ac.ed.inf.ServerNavigationConstants.CENTRAL_AREA;
-import static uk.ac.ed.inf.ServerNavigationConstants.ILP_SERVER_URL;
 
 /**
  * Singleton that defines the central area.
@@ -17,7 +16,7 @@ public class CentralArea {
      * Constructor gets all central area points from the REST-server.
      */
     private CentralArea() {
-        centralArea = ResponseHandler.getJSonResponse(ILP_SERVER_URL.label + CENTRAL_AREA.label);
+        centralArea = ResponseHandler.getJSonResponse(App.SERVER_URL+ CENTRAL_AREA.label);
     }
 
     /**

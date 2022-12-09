@@ -32,6 +32,11 @@ public class ResponseHandler {
     public static JSONArray getJSonResponse(String url) {
         String response = getResponse(url);
         //Converts response to JSONArray
-        return new JSONArray(response);
+        try{
+            return new JSONArray(response);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return null;
     }
 }

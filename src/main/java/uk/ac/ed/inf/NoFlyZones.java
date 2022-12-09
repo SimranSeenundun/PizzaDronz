@@ -19,7 +19,7 @@ public class NoFlyZones {
      * Constructor gets all no-fly zones from the REST-server.
      */
     private NoFlyZones() {
-        noFlyZonesJson = ResponseHandler.getJSonResponse(ILP_SERVER_URL.label + NO_FLY_ZONES.label);
+        noFlyZonesJson = ResponseHandler.getJSonResponse(App.SERVER_URL + NO_FLY_ZONES.label);
     }
 
     /**
